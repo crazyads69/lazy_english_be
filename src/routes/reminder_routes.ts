@@ -77,10 +77,10 @@ router.post("/reminder", async (req: Request, res: Response) => {
       // Cancel existing reminder job
       await cancelReminder(existingReminder.id);
 
-      // Update existing reminder
+      const { id, ...updateData } = validatedData; // Remove id from update data
       reminder = await prisma.reminder.update({
         where: { id: existingReminder.id },
-        data: validatedData,
+        data: updateData,
       });
     } else {
       // Create new reminder

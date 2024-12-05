@@ -38,7 +38,7 @@ async function scheduleReminder(
           const message = {
             notification: {
               title: `${randomWord.name} ${randomWord.ipa}`,
-              body: `*${randomWord.meaning}\n*${randomWord.example}`,
+              body: `*${randomWord.meaning}\n\n*Example: ${randomWord.example}`,
             },
             token: reminderData.deviceToken,
           };
