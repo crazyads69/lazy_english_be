@@ -6,6 +6,7 @@ import { scheduleReminder, cancelReminder } from "../utils/job/job";
 import { reminderSchema } from "../schemas/reminder_schemas";
 import { prisma } from "../services/reminder_service";
 import { Job, scheduledJobs } from "node-schedule";
+import { wordListData } from "../utils/wordlist/wordlist";
 
 const router = Router();
 
@@ -32,8 +33,6 @@ interface ScheduledJobsMap {
  *               - startDate
  *               - endDate
  *               - frequency
- *               - title
- *               - body
  *             properties:
  *               userId:
  *                 type: string
@@ -46,10 +45,6 @@ interface ScheduledJobsMap {
  *                 type: string
  *                 format: date-time
  *               frequency:
- *                 type: string
- *               title:
- *                 type: string
- *               body:
  *                 type: string
  *     responses:
  *       201:
@@ -95,7 +90,7 @@ router.post("/reminder", async (req: Request, res: Response) => {
     }
 
     // Schedule new job
-    const job = await scheduleReminder(reminder);
+    const job = await scheduleReminder(reminder, wordListData);
 
     if (job) {
       res.status(existingReminder ? 200 : 201).json({

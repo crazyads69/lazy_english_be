@@ -22,6 +22,9 @@ COPY . .
 # Build the TypeScript code
 RUN npm run build
 
+# List contents of dist directory to verify build
+RUN ls -la dist
+
 # Expose the port the app runs on
 EXPOSE 8000
 

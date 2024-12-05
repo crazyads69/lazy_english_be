@@ -20,8 +20,6 @@ model Reminder {
   startDate   DateTime
   endDate     DateTime
   frequency   String
-  title       String
-  body        String
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

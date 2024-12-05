@@ -2,7 +2,7 @@ services:
   app:
     build: .
     ports:
-      - "3000:3000"
+      - "8000:8000"
     environment:
       - NODE_ENV=production
       - DATABASE_URL=mongodb://mongo1,mongo2,mongo3/lazy_english?replicaSet=rs0

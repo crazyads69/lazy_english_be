@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { scheduleReminder } from "../utils/job/job";
+import { wordListData } from "../utils/wordlist/wordlist";
 
 const prisma = new PrismaClient();
 
@@ -11,7 +12,7 @@ async function loadActiveReminders() {
     });
 
     for (const reminder of activeReminders) {
-      await scheduleReminder(reminder);
+      await scheduleReminder(reminder, wordListData);
     }
 
     console.log(`Loaded ${activeReminders.length} active reminders`);

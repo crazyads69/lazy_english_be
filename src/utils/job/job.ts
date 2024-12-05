@@ -3,41 +3,50 @@ import { Reminder } from "../../schemas/reminder_schemas";
 import { createCronExpression, parseFrequency } from "../cron/cron";
 import schedule, { Job } from "node-schedule";
 import { admin } from "../firebase/firebase";
+import { WordList, Word } from "../../schemas/wordlist_schemas";
 
 // Create a type for the scheduled jobs map
 interface ScheduledJobs {
   [key: string]: Job;
 }
 
-// Helper function to schedule a reminder
-async function scheduleReminder(reminderData: Reminder): Promise<Job | null> {
+// Add this function to randomly select a word
+function getRandomWord(wordList: WordList): Word {
+  const randomIndex = Math.floor(Math.random() * wordList.words.length);
+  return wordList.words[randomIndex];
+}
+
+// Modify the scheduleReminder function
+async function scheduleReminder(
+  reminderData: Reminder,
+  wordList: WordList
+): Promise<Job | null> {
   try {
     const { hours, minutes, period } = parseFrequency(reminderData.frequency);
     const cronExpression = createCronExpression(hours, minutes, period);
 
     const job = schedule.scheduleJob(
-      reminderData.id, // Use the reminder's ID as the job name
+      reminderData.id,
       {
         start: new Date(reminderData.startDate),
         end: new Date(reminderData.endDate),
         rule: cronExpression,
-        tz: "UTC", // Explicitly set timezone
+        tz: "UTC",
       },
       async function () {
         try {
+          const randomWord = getRandomWord(wordList);
           const message = {
             notification: {
-              title: reminderData.title || "Thông báo học tập",
-              body:
-                reminderData.body ||
-                "Đã đến giờ học tiếng Anh cùng Lazy English",
+              title: `${randomWord.name} ${randomWord.ipa}`,
+              body: `*${randomWord.meaning}\n*${randomWord.example}`,
             },
             token: reminderData.deviceToken,
           };
 
           await admin.messaging().send(message);
           console.log(
-            `Notification sent successfully for reminder ${reminderData.id}`
+            `Notification sent successfully for reminder ${reminderData.id} with word: ${randomWord.name}`
           );
         } catch (error) {
           console.error(
