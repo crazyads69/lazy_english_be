@@ -1,6 +1,12 @@
 # Use an official Node runtime as the base image
 FROM node:18
 
+# Set the timezone
+ENV TZ=Asia/Bangkok
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+
 # Set the working directory in the container
 WORKDIR /usr/src/app
 

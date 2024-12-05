@@ -31,7 +31,6 @@ async function scheduleReminder(
         start: new Date(reminderData.startDate),
         end: new Date(reminderData.endDate),
         rule: cronExpression,
-        tz: "UTC",
       },
       async function () {
         try {

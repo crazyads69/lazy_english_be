@@ -6,6 +6,7 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=mongodb://mongo1,mongo2,mongo3/lazy_english?replicaSet=rs0
+      - TZ=Asia/Bangkok
     env_file:
       - .env
     volumes:
