@@ -1,7 +1,7 @@
 // utils/job/job.ts
 import { Reminder } from "../../schemas/reminder_schemas";
 import { createCronExpression, parseFrequency } from "../cron/cron";
-import schedule, { Job } from "node-schedule";
+import schedule, { Job, RecurrenceRule } from "node-schedule";
 import { admin } from "../firebase/firebase";
 import { WordList, Word } from "../../schemas/wordlist_schemas";
 
@@ -31,13 +31,18 @@ async function scheduleReminder(
     const cronExpression = createCronExpression(hours, minutes, period);
     console.log(`Created cron expression: ${cronExpression}`);
 
+    const startDate = new Date(reminderData.startDate);
+    const endDate = new Date(reminderData.endDate);
+    console.log(`Start date: ${startDate}, End date: ${endDate}`);
+
+    const rule = new RecurrenceRule();
+    rule.hour = hours;
+    rule.minute = minutes;
+    console.log(`Recurrence rule: ${JSON.stringify(rule)}`);
+
     const job = schedule.scheduleJob(
       reminderData.id,
-      {
-        start: new Date(reminderData.startDate),
-        end: new Date(reminderData.endDate),
-        rule: cronExpression,
-      },
+      { start: startDate, end: endDate, rule: cronExpression },
       async function () {
         try {
           const randomWord = getRandomWord(wordList);
@@ -64,6 +69,7 @@ async function scheduleReminder(
 
     if (job) {
       console.log(`Reminder ${reminderData.id} scheduled successfully`);
+      console.log(`Next invocation: ${job.nextInvocation()}`);
       return job;
     } else {
       console.error(`Failed to schedule reminder ${reminderData.id}`);
@@ -71,7 +77,7 @@ async function scheduleReminder(
     }
   } catch (error) {
     console.error(`Error scheduling reminder ${reminderData.id}:`, error);
-    throw error; // Re-throw the error so it can be caught in the route handler
+    throw error;
   }
 }
 

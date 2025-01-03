@@ -98,9 +98,10 @@ router.post("/reminder", async (req: Request, res: Response) => {
             ? "Reminder updated successfully"
             : "Reminder created successfully",
           reminder,
+          nextInvocation: job.nextInvocation(),
         });
       } else {
-        throw new Error("Failed to schedule reminder");
+        throw new Error("Failed to schedule reminder: job is null");
       }
     } catch (scheduleError) {
       console.error("Error scheduling reminder:", scheduleError);
@@ -109,7 +110,7 @@ router.post("/reminder", async (req: Request, res: Response) => {
       if (!existingReminder) {
         await prisma.reminder.delete({ where: { id: reminder.id } });
       }
-      throw new Error("Failed to schedule reminder");
+      throw scheduleError;
     }
   } catch (error) {
     if (error instanceof z.ZodError) {
