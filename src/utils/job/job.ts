@@ -38,7 +38,12 @@ async function scheduleReminder(
     console.log(`Created cron expression: ${cronExpression}`);
 
     const startDate = new Date(reminderData.startDate);
+    // Set the start date to the beginning of the day (00:00:00.000)
+    startDate.setHours(0, 0, 0, 0);
+
+    // Set the end date to the end of the day (23:59:59.999)
     const endDate = new Date(reminderData.endDate);
+    endDate.setHours(23, 59, 59, 999);
 
     console.log(`Start date: ${startDate}, End date: ${endDate}`);
 
