@@ -37,17 +37,10 @@ async function scheduleReminder(
     const cronExpression = createCronExpression(hours, minutes, period);
     console.log(`Created cron expression: ${cronExpression}`);
 
-    const serverTimezoneOffset = new Date().getTimezoneOffset();
     const startDate = new Date(reminderData.startDate);
     const endDate = new Date(reminderData.endDate);
 
-    // Adjust dates for server timezone
-    startDate.setMinutes(startDate.getMinutes() - serverTimezoneOffset);
-    endDate.setMinutes(endDate.getMinutes() - serverTimezoneOffset);
-
-    console.log(
-      `Adjusted Start date: ${startDate}, Adjusted End date: ${endDate}`
-    );
+    console.log(`Start date: ${startDate}, End date: ${endDate}`);
 
     const rule = new RecurrenceRule();
     rule.hour = hours;
