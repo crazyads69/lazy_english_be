@@ -90,16 +90,25 @@ router.post("/reminder", async (req: Request, res: Response) => {
     }
 
     // Schedule new job
-    const job = await scheduleReminder(reminder, wordListData);
-
-    if (job) {
-      res.status(existingReminder ? 200 : 201).json({
-        message: existingReminder
-          ? "Reminder updated successfully"
-          : "Reminder created successfully",
-        reminder,
-      });
-    } else {
+    try {
+      const job = await scheduleReminder(reminder, wordListData);
+      if (job) {
+        res.status(existingReminder ? 200 : 201).json({
+          message: existingReminder
+            ? "Reminder updated successfully"
+            : "Reminder created successfully",
+          reminder,
+        });
+      } else {
+        throw new Error("Failed to schedule reminder");
+      }
+    } catch (scheduleError) {
+      console.error("Error scheduling reminder:", scheduleError);
+      console.error("Reminder data:", JSON.stringify(reminder, null, 2));
+      // If the reminder was created but scheduling failed, delete it
+      if (!existingReminder) {
+        await prisma.reminder.delete({ where: { id: reminder.id } });
+      }
       throw new Error("Failed to schedule reminder");
     }
   } catch (error) {
@@ -107,7 +116,9 @@ router.post("/reminder", async (req: Request, res: Response) => {
       return res.status(400).json({ error: error.errors });
     }
     console.error("Error creating/updating reminder:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res
+      .status(500)
+      .json({ error: "Failed to create/update reminder: " + error });
   }
 });
 

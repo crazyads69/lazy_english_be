@@ -22,8 +22,14 @@ async function scheduleReminder(
   wordList: WordList
 ): Promise<Job | null> {
   try {
+    console.log(`Attempting to schedule reminder for ${reminderData.id}`);
+    console.log(`Reminder data:`, JSON.stringify(reminderData, null, 2));
+
     const { hours, minutes, period } = parseFrequency(reminderData.frequency);
+    console.log(`Parsed frequency: ${hours}:${minutes} ${period}`);
+
     const cronExpression = createCronExpression(hours, minutes, period);
+    console.log(`Created cron expression: ${cronExpression}`);
 
     const job = schedule.scheduleJob(
       reminderData.id,
@@ -65,7 +71,7 @@ async function scheduleReminder(
     }
   } catch (error) {
     console.error(`Error scheduling reminder ${reminderData.id}:`, error);
-    return null;
+    throw error; // Re-throw the error so it can be caught in the route handler
   }
 }
 
