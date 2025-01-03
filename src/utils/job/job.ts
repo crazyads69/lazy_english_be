@@ -22,6 +22,12 @@ async function scheduleReminder(
   wordList: WordList
 ): Promise<Job | null> {
   try {
+    const existingJob = schedule.scheduledJobs[reminderData.id];
+    if (existingJob) {
+      existingJob.cancel();
+      console.log(`Canceled existing job with ID: ${reminderData.id}`);
+    }
+
     console.log(`Attempting to schedule reminder for ${reminderData.id}`);
     console.log(`Reminder data:`, JSON.stringify(reminderData, null, 2));
 
@@ -31,13 +37,8 @@ async function scheduleReminder(
     const cronExpression = createCronExpression(hours, minutes, period);
     console.log(`Created cron expression: ${cronExpression}`);
 
-    const timezone = "Asia/Bangkok"; // Example
-    const startDate = new Date(reminderData.startDate).toLocaleString("en-US", {
-      timeZone: timezone,
-    });
-    const endDate = new Date(reminderData.endDate).toLocaleString("en-US", {
-      timeZone: timezone,
-    });
+    const startDate = new Date(reminderData.startDate);
+    const endDate = new Date(reminderData.endDate);
 
     console.log(`Start date: ${startDate}, End date: ${endDate}`);
 
