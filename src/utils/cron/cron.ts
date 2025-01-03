@@ -14,12 +14,25 @@ function parseFrequency(frequency: string) {
 function createCronExpression(hours: number, minutes: number, period: string) {
   let cronHours = hours;
 
-  if (period === "PM" && hours !== 12) {
-    cronHours = hours + 12;
+  // Handle AM times
+  if (period === "AM") {
+    if (hours === 12) {
+      cronHours = 0;  // 12 AM is 0 in 24-hour format
+    } else {
+      cronHours = hours;  // Other AM hours stay the same
+    }
   }
-  if (period === "AM" && hours === 12) {
-    cronHours = 0;
+  // Handle PM times
+  else if (period === "PM") {
+    if (hours === 12) {
+      cronHours = 12;  // 12 PM stays 12
+    } else {
+      cronHours = hours + 12;  // Other PM hours add 12
+    }
   }
+
+  // Add logging for debugging
+  console.log(`Converting ${hours}:${minutes} ${period} to cron: ${minutes} ${cronHours} * * *`);
 
   return `${minutes} ${cronHours} * * *`;
 }
